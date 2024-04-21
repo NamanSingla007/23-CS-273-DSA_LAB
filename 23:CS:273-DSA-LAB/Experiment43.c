@@ -1,39 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_SIZE 100
+struct Node
+{
+    int data;
+    struct Node *next;
+};
 
 struct Stack
 {
-    int items[MAX_SIZE];
-    int top;
+    struct Node *top;
 };
 
 struct Stack *createStack()
 {
     struct Stack *stack = (struct Stack *)malloc(sizeof(struct Stack));
-    stack->top = -1;
+    stack->top = NULL;
     return stack;
 }
 
 int isEmpty(struct Stack *stack)
 {
-    return (stack->top == -1);
-}
-
-int isFull(struct Stack *stack)
-{
-    return (stack->top == MAX_SIZE - 1);
+    return (stack->top == NULL);
 }
 
 void push(struct Stack *stack, int item)
 {
-    if (isFull(stack))
-    {
-        printf("Stack Overflow\n");
-        return;
-    }
-    stack->items[++stack->top] = item;
+    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
+    newNode->data = item;
+    newNode->next = stack->top;
+    stack->top = newNode;
 }
 
 int pop(struct Stack *stack)
@@ -43,7 +39,11 @@ int pop(struct Stack *stack)
         printf("Stack Underflow\n");
         return -1;
     }
-    return stack->items[stack->top--];
+    struct Node *temp = stack->top;
+    int popped = temp->data;
+    stack->top = stack->top->next;
+    free(temp);
+    return popped;
 }
 
 int peek(struct Stack *stack)
@@ -53,7 +53,7 @@ int peek(struct Stack *stack)
         printf("Stack is empty\n");
         return -1;
     }
-    return stack->items[stack->top];
+    return stack->top->data;
 }
 
 int main()
